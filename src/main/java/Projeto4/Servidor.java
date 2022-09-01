@@ -31,6 +31,9 @@ public class Servidor extends Thread{
                 System.out.print("Esperando conectar...");
                 Socket conexao = s.accept();
                 System.out.print(" Conectou!");
+                System.out.println();
+                System.out.println("Endereço do cliente: " + conexao.getLocalAddress());
+                System.out.println("Porta Exclusiva: " + conexao.getPort());
                 Thread t = new Servidor(conexao);
                 t.start();
             }
@@ -50,8 +53,8 @@ public class Servidor extends Thread{
                 return;
             }
             clientes.add(saida);
-            String linha = entrada.readLine();
             sendToAll(saida, " entrou ", " no Chat!");
+            String linha = entrada.readLine();
             while((linha != null) && (!linha.trim().equals(""))){
                 sendToAll(saida, " disse: ", linha);
                 linha = entrada.readLine();
