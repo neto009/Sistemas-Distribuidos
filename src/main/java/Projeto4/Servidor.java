@@ -6,80 +6,78 @@ package Projeto4;
 
 import java.io.*;
 import java.net.*;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
 
-public class Servidor extends Thread {
-    private static Vector clients;
+/**
+ *
+ * @author cibel
+ */
+public class Servidor extends Thread{
+    private static Vector clientes;
     private Socket conexao;
     private String meuNome;
     
-    public Servidor(Socket s) {
+    public Servidor(Socket s){
         conexao = s;
     }
     
     public static void main(String[] args) {
         try{
-            clients = new Vector();
+            clientes = new Vector();
             
             ServerSocket s = new ServerSocket(2000);
             
-            while(true) {
-                System.out.println("Esperando conectar ....");
-                
+            while(true){
+                System.out.print("Esperando conectar...");
                 Socket conexao = s.accept();
-                System.out.println(" Conectou! ");
+                System.out.print(" Conectou!");
                 Thread t = new Servidor(conexao);
                 t.start();
             }
             
         }catch(Exception e){
-            e.printStackTrace();
+            System.out.println(e);
         }
     }
     
     public void run(){
         try{
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in));
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(conexao.getInputStream()));
             PrintStream saida = new PrintStream(conexao.getOutputStream());
             
             meuNome = entrada.readLine();
-            
-            if(meuNome == null){
+            if (meuNome == null){
                 return;
             }
-            clients.add(saida);
+            clientes.add(saida);
             String linha = entrada.readLine();
-            
+            sendToAll(saida, " entrou ", " no Chat!");
             while((linha != null) && (!linha.trim().equals(""))){
                 sendToAll(saida, " disse: ", linha);
                 linha = entrada.readLine();
             }
             
-            sendToAll(saida, " saiu ", "do Chat!");
-            clients.remove(saida);
+            sendToAll(saida, " saiu ", " do Chat!");
+            clientes.remove(saida);
             conexao.close();
-            
         }catch(Exception e){
-            e.printStackTrace();
+            System.out.println(e);
         }
     }
     
-    public void sendToAll(PrintStream saida, String acao, String linha) {
-        Enumeration e = clients.elements();
+    public void sendToAll(PrintStream saida, String acao, String linha){
+        Enumeration e = clientes.elements();
         while(e.hasMoreElements()){
             PrintStream chat = (PrintStream) e.nextElement();
             
-            if(chat != saida) {
-                chat.print(meuNome + acao + linha);
+            if(chat != saida){
+                //****O comando estava errado (chat.print)
+                chat.println(meuNome + acao + linha);
             }
-            
-            if(acao.equals(" saiu ")) {
-                if(chat== saida){
+            if(acao.equals(" saiu ")){
+                if (chat == saida)
                     chat.println("");
-                }
             }
-        }        
+        }
     }
-    
 }
