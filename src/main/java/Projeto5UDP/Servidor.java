@@ -24,7 +24,9 @@ public class Servidor {
             while (true){
                 envio = "";
                 s.receive(recebe);
-                System.out.print("Mensagem recebido: ");
+                System.out.print("Mensagem recebida na porta: " + recebe.getPort());
+                System.out.println();
+                System.out.print("Mensagem recebida: " );
                 
                 for(int i = 0; i < recebe.getLength(); i++) {
                     System.out.print((char) recebe.getData()[i]);
